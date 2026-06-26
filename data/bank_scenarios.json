@@ -1,0 +1,16 @@
+[
+  {
+    "role": "admin",
+    "username": "admin",
+    "password": "admin123",
+    "account_name": "Primary Savings",
+    "deposit_amount": 77,
+    "description": "Automation deposit"
+  },
+  {
+    "role": "viewer",
+    "username": "viewer",
+    "password": "viewer123",
+    "account_name": "Primary Savings"
+  }
+]
