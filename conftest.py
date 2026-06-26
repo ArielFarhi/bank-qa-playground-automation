@@ -1,0 +1,72 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any
+
+import pytest
+from playwright.sync_api import Browser, Page, Playwright, sync_playwright
+
+from config import settings
+
+
+def pytest_html_report_title(report) -> None:
+    report.title = "Bank QA Playground Automation Report"
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    report.sections = [
+        section
+        for section in report.sections
+        if not section[0].lower().startswith("captured stderr")
+    ]
+
+
+def pytest_configure(config) -> None:
+    Path("reports").mkdir(exist_ok=True)
+    Path("test-results").mkdir(exist_ok=True)
+
+
+@pytest.fixture(scope="session")
+def scenarios() -> list[dict[str, Any]]:
+    with Path("data/bank_scenarios.json").open(encoding="utf-8") as file:
+        return json.load(file)
+
+
+@pytest.fixture(scope="session")
+def playwright_instance() -> Playwright:
+    with sync_playwright() as playwright:
+        yield playwright
+
+
+@pytest.fixture(scope="session")
+def browser(playwright_instance: Playwright) -> Browser:
+    browser_launcher = getattr(playwright_instance, settings.browser)
+    launch_options = {
+        "headless": settings.headless,
+        "slow_mo": settings.slow_mo_ms,
+    }
+    if settings.browser_channel:
+        launch_options["channel"] = settings.browser_channel
+    if settings.executable_path:
+        launch_options["executable_path"] = settings.executable_path
+    browser = browser_launcher.launch(
+        **launch_options,
+    )
+    yield browser
+    browser.close()
+
+
+@pytest.fixture()
+def page(browser: Browser) -> Page:
+    context_options = {"viewport": {"width": 1440, "height": 900}}
+    if settings.record_video:
+        context_options["record_video_dir"] = "test-results/videos"
+    context = browser.new_context(**context_options)
+    page = context.new_page()
+    page.set_default_timeout(settings.timeout_ms)
+    yield page
+    context.close()
