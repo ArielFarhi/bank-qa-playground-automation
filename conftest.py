@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import base64
 import json
 import os
@@ -7,11 +6,9 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-
 import pytest
 from pytest_html import extras as html_extras
 from playwright.sync_api import Browser, Page, Playwright, sync_playwright
-
 from config import settings
 
 
@@ -22,46 +19,6 @@ class SecretValue(str):
 
 def pytest_html_report_title(report) -> None:
     report.title = "SecureBank Automation Test Report"
-
-
-def pytest_html_results_summary(prefix, summary, postfix, session) -> None:
-    prefix.extend(
-        [
-            '<section class="summary-card">',
-            "<strong>Execution scope</strong>",
-            "<ul>",
-            "<li>Admin end-to-end flow: login, balance read, deposit, withdrawal, and final balance validation.</li>",
-            "<li>Viewer authorization flow: read-only access is allowed, transaction creation is blocked.</li>",
-            "<li>Credentials are loaded from environment variables and redacted from failure output.</li>",
-            "</ul>",
-            "</section>",
-        ]
-    )
-
-
-def pytest_html_results_table_header(cells) -> None:
-    cells.insert(2, '<th class="sortable scenario" data-column-type="scenario">Scenario</th>')
-    cells.pop()
-
-
-def pytest_html_results_table_row(report, cells) -> None:
-    cells.insert(2, f'<td class="col-scenario">{_scenario_title(report.nodeid)}</td>')
-    cells.pop()
-
-
-def _scenario_title(nodeid: str) -> str:
-    titles = {
-        "test_admin_account_lifecycle": (
-            "Admin account lifecycle: deposit, withdrawal, balance validation"
-        ),
-        "test_read_only_viewer_cannot_create_transactions": (
-            "Viewer permissions: inspect accounts, block transaction creation"
-        ),
-    }
-    for test_name, title in titles.items():
-        if test_name in nodeid:
-            return title
-    return "Automation scenario"
 
 
 @pytest.hookimpl(hookwrapper=True)
