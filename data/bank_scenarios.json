@@ -5,7 +5,9 @@
     "password_env": "BANK_ADMIN_PASSWORD",
     "account_name": "Primary Savings",
     "deposit_amount": 77,
-    "description": "Automation deposit"
+    "deposit_description": "Automation deposit",
+    "withdrawal_amount": 25,
+    "withdrawal_description": "Automation withdrawal"
   },
   {
     "role": "viewer",

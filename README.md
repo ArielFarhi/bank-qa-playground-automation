@@ -8,6 +8,7 @@ The suite validates a full customer account lifecycle:
 - Log in with configured credentials
 - Read the selected account balance dynamically
 - Create a deposit transaction
+- Create a withdrawal transaction
 - Validate the latest transaction row
 - Validate the final account balance by delta, not by a hardcoded account state
 - Verify that a read-only viewer can inspect account data but cannot create transactions
@@ -77,7 +78,7 @@ BANK_VIEWER_USERNAME=
 BANK_VIEWER_PASSWORD=
 ```
 
-You can change the account name, deposit amount, transaction description, and tested user roles without editing the test code. To use different credential variable names per scenario, update the `username_env` and `password_env` values in `data/bank_scenarios.json`.
+You can change the account name, deposit amount, withdrawal amount, transaction descriptions, and tested user roles without editing the test code. To use different credential variable names per scenario, update the `username_env` and `password_env` values in `data/bank_scenarios.json`.
 
 Environment variables are also supported:
 
@@ -89,8 +90,6 @@ BANK_VIEWER_PASSWORD="<viewer-password>"
 BASE_URL="https://qaplayground.com/bank"
 HEADLESS=true
 BROWSER=chromium
-BROWSER_CHANNEL=
-CHROME_PATH=
 TIMEOUT_MS=15000
 SLOW_MO_MS=0
 RECORD_VIDEO=false
@@ -101,6 +100,8 @@ If Playwright browsers are not installed, you can run with a local Chrome instal
 ```bash
 CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" pytest
 ```
+
+`BROWSER_CHANNEL` and `CHROME_PATH` are optional browser overrides. Leave them unset for the default Playwright-managed Chromium browser.
 
 ## Running the Tests
 
@@ -132,11 +133,19 @@ reports/report-YYYYMMDD-HHMMSS.html
 ```
 
 The `reports/` directory is ignored by git because it contains generated run artifacts.
+The report includes a readable execution scope summary, scenario descriptions, captured test logs, and redacted credentials on failure. Failed tests also save a screenshot and Playwright trace under `test-results/` for debugging dynamic UI, loading, or network-related issues.
 
 If `RECORD_VIDEO=true` is enabled, videos are saved under:
 
 ```text
 test-results/videos
+```
+
+Failure diagnostics are saved under:
+
+```text
+test-results/screenshots
+test-results/traces
 ```
 
 ## Stability Notes

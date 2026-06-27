@@ -38,9 +38,21 @@ class TransactionsPage(BasePage):
         expect(self.page.get_by_test_id("transactions-table")).to_be_visible()
 
     def create_deposit(self, account_name: str, amount: int, description: str) -> None:
+        self._create_transaction("deposit", account_name, amount, description)
+
+    def create_withdrawal(self, account_name: str, amount: int, description: str) -> None:
+        self._create_transaction("withdrawal", account_name, amount, description)
+
+    def _create_transaction(
+        self,
+        transaction_type: str,
+        account_name: str,
+        amount: int,
+        description: str,
+    ) -> None:
         self.page.keyboard.press("n")
         expect(self.transaction_modal).to_be_visible()
-        self.transaction_form.locator("select").nth(0).select_option("deposit")
+        self.transaction_form.locator("select").nth(0).select_option(transaction_type)
         self._select_account(account_name)
         self.amount_input.fill(str(amount))
         self.description_input.fill(description)
@@ -54,10 +66,32 @@ class TransactionsPage(BasePage):
         expect(self.transaction_modal).not_to_be_visible()
 
     def expect_latest_deposit(self, account_name: str, amount: int, description: str) -> None:
+        self._expect_latest_transaction("Deposit", account_name, f"+${amount:,.2f}", description)
+
+    def expect_latest_withdrawal(
+        self,
+        account_name: str,
+        amount: int,
+        description: str,
+    ) -> None:
+        self._expect_latest_transaction(
+            "Withdrawal",
+            account_name,
+            f"-${amount:,.2f}",
+            description,
+        )
+
+    def _expect_latest_transaction(
+        self,
+        transaction_type: str,
+        account_name: str,
+        amount_text: str,
+        description: str,
+    ) -> None:
         latest_row = self.page.get_by_test_id("transaction-row").first
-        expect(latest_row).to_contain_text("Deposit")
+        expect(latest_row).to_contain_text(transaction_type)
         expect(latest_row).to_contain_text(account_name)
-        expect(latest_row).to_contain_text(f"+${amount:,.2f}")
+        expect(latest_row).to_contain_text(amount_text)
         expect(latest_row).to_contain_text(description)
 
     def _select_account(self, account_name: str) -> None:

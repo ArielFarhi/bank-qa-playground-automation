@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timezone
 
 import pytest
+
 from config import settings
 from pages.account_page import AccountPage
 from pages.login_page import LoginPage
@@ -19,9 +20,14 @@ def scenario_by_role(scenarios, role: str):
 @pytest.mark.e2e
 def test_admin_account_lifecycle(page, scenarios):
     scenario = scenario_by_role(scenarios, "admin")
-    unique_description = (
-        f"{scenario['description']} - "
-        f"{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S%f')}"
+    unique_suffix = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
+    unique_deposit_description = (
+        f"{scenario['deposit_description']} - "
+        f"{unique_suffix}"
+    )
+    unique_withdrawal_description = (
+        f"{scenario['withdrawal_description']} - "
+        f"{unique_suffix}"
     )
 
     logger.info("Open the banking playground")
@@ -43,15 +49,31 @@ def test_admin_account_lifecycle(page, scenarios):
     transactions_page.create_deposit(
         scenario["account_name"],
         scenario["deposit_amount"],
-        unique_description,
+        unique_deposit_description,
     )
     transactions_page.expect_latest_deposit(
         scenario["account_name"],
         scenario["deposit_amount"],
-        unique_description,
+        unique_deposit_description,
     )
 
-    expected_balance = initial_balance + scenario["deposit_amount"]
+    logger.info("Create withdrawal transaction: %s", scenario["withdrawal_amount"])
+    transactions_page.create_withdrawal(
+        scenario["account_name"],
+        scenario["withdrawal_amount"],
+        unique_withdrawal_description,
+    )
+    transactions_page.expect_latest_withdrawal(
+        scenario["account_name"],
+        scenario["withdrawal_amount"],
+        unique_withdrawal_description,
+    )
+
+    expected_balance = (
+        initial_balance
+        + scenario["deposit_amount"]
+        - scenario["withdrawal_amount"]
+    )
     logger.info("Validate final balance: %s", expected_balance)
     account_page.open()
     assert account_page.balance_for_account(scenario["account_name"]) == expected_balance
