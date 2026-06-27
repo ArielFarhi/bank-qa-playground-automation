@@ -60,17 +60,32 @@ playwright install
 
 ## Configuration
 
-The test data is stored in:
+The non-secret test data is stored in:
 
 ```text
 data/bank_scenarios.json
 ```
 
-You can change the credentials, account name, deposit amount, transaction description, and tested user roles without editing the test code.
+Credentials are read from environment variables. Keep local values in a `.env` file or export them in your shell/CI secret store. Local `.env` values are loaded automatically before the tests run. The repository includes `.env.example` with the required variable names, but `.env` itself is ignored by git.
+
+Required credential variables:
+
+```bash
+BANK_ADMIN_USERNAME=
+BANK_ADMIN_PASSWORD=
+BANK_VIEWER_USERNAME=
+BANK_VIEWER_PASSWORD=
+```
+
+You can change the account name, deposit amount, transaction description, and tested user roles without editing the test code. To use different credential variable names per scenario, update the `username_env` and `password_env` values in `data/bank_scenarios.json`.
 
 Environment variables are also supported:
 
 ```bash
+BANK_ADMIN_USERNAME="<admin-username>"
+BANK_ADMIN_PASSWORD="<admin-password>"
+BANK_VIEWER_USERNAME="<viewer-username>"
+BANK_VIEWER_PASSWORD="<viewer-password>"
 BASE_URL="https://qaplayground.com/bank"
 HEADLESS=true
 BROWSER=chromium

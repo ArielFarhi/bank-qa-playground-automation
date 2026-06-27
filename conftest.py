@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -33,7 +34,31 @@ def pytest_configure(config) -> None:
 @pytest.fixture(scope="session")
 def scenarios() -> list[dict[str, Any]]:
     with Path("data/bank_scenarios.json").open(encoding="utf-8") as file:
-        return json.load(file)
+        loaded_scenarios = json.load(file)
+    return [_resolve_scenario_credentials(scenario) for scenario in loaded_scenarios]
+
+
+def _resolve_scenario_credentials(scenario: dict[str, Any]) -> dict[str, Any]:
+    resolved_scenario = scenario.copy()
+    missing_env_vars = []
+    for field in ("username", "password"):
+        env_var = resolved_scenario.pop(f"{field}_env", None)
+        if not env_var:
+            continue
+        value = os.getenv(env_var)
+        if value is None:
+            missing_env_vars.append(env_var)
+            continue
+        resolved_scenario[field] = value
+
+    if missing_env_vars:
+        role = resolved_scenario.get("role", "unknown")
+        missing = ", ".join(missing_env_vars)
+        raise pytest.UsageError(
+            f"Missing environment variables for {role} scenario: {missing}"
+        )
+
+    return resolved_scenario
 
 
 @pytest.fixture(scope="session")

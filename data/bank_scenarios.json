@@ -1,16 +1,16 @@
 [
   {
     "role": "admin",
-    "username": "admin",
-    "password": "admin123",
+    "username_env": "BANK_ADMIN_USERNAME",
+    "password_env": "BANK_ADMIN_PASSWORD",
     "account_name": "Primary Savings",
     "deposit_amount": 77,
     "description": "Automation deposit"
   },
   {
     "role": "viewer",
-    "username": "viewer",
-    "password": "viewer123",
+    "username_env": "BANK_VIEWER_USERNAME",
+    "password_env": "BANK_VIEWER_PASSWORD",
     "account_name": "Primary Savings"
   }
 ]
