@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -27,8 +28,13 @@ def pytest_runtest_makereport(item, call):
 
 
 def pytest_configure(config) -> None:
-    Path("reports").mkdir(exist_ok=True)
+    reports_dir = Path("reports")
+    reports_dir.mkdir(exist_ok=True)
     Path("test-results").mkdir(exist_ok=True)
+
+    if hasattr(config.option, "htmlpath") and not config.option.htmlpath:
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        config.option.htmlpath = str(reports_dir / f"report-{timestamp}.html")
 
 
 @pytest.fixture(scope="session")

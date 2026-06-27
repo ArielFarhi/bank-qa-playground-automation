@@ -124,11 +124,14 @@ pytest -m e2e
 
 ## Reporting
 
-An HTML report is generated automatically after each run:
+An HTML report is generated automatically after each run under `reports/`.
+Each run gets a timestamped file so recent reports remain available for comparison:
 
 ```text
-reports/report.html
+reports/report-YYYYMMDD-HHMMSS.html
 ```
+
+The `reports/` directory is ignored by git because it contains generated run artifacts.
 
 If `RECORD_VIDEO=true` is enabled, videos are saved under:
 

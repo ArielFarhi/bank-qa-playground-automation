@@ -28,7 +28,7 @@ def test_admin_account_lifecycle(page, scenarios):
     login_page = LoginPage(page)
     login_page.open(settings.base_url)
 
-    logger.info("Log in as user: %s", scenario["username"])
+    logger.info("Log in with role: %s", scenario["role"])
     login_page.login(scenario["username"], scenario["password"])
 
     logger.info("Read initial account balance: %s", scenario["account_name"])
@@ -65,7 +65,7 @@ def test_read_only_viewer_cannot_create_transactions(page, scenarios):
     login_page = LoginPage(page)
     login_page.open(settings.base_url)
 
-    logger.info("Log in as read-only user: %s", scenario["username"])
+    logger.info("Log in with role: %s", scenario["role"])
     login_page.login(scenario["username"], scenario["password"])
 
     logger.info("Verify viewer can inspect account balance")
