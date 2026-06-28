@@ -133,7 +133,7 @@ reports/report-YYYYMMDD-HHMMSS.html
 ```
 
 The `reports/` directory is ignored by git because it contains generated run artifacts.
-The report includes a readable execution scope summary, scenario descriptions, captured test logs, and redacted credentials on failure. Failed tests also save a screenshot and Playwright trace under `test-results/` for debugging dynamic UI, loading, or network-related issues.
+The report includes captured test logs and redacted credentials on failure. Failed tests also save a screenshot and Playwright trace under `test-results/` for debugging dynamic UI, loading, or timing issues.
 
 If `RECORD_VIDEO=true` is enabled, videos are saved under:
 
