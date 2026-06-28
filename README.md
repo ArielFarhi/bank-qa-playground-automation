@@ -101,8 +101,6 @@ If Playwright browsers are not installed, you can run with a local Chrome instal
 CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" pytest
 ```
 
-`BROWSER_CHANNEL` and `CHROME_PATH` are optional browser overrides. Leave them unset for the default Playwright-managed Chromium browser.
-
 ## Running the Tests
 
 Run the full suite:
